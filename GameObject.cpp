@@ -8,11 +8,12 @@ GameObject::GameObject() : btRigidBody(btScalar(0), NULL, NULL, btVector3(0,0,0)
 
 GameObject::GameObject(double halfWidth, double halfHeight, double x, double y, double mass) : btRigidBody(createRigidBody(halfWidth, halfHeight, x, y, mass))
 {
-   //this->setUserIndex(-1);
    this->halfWidth = halfWidth;
    this->halfHeight = halfHeight;
+   this->mass = mass;
 
    this->color.setValue(0, 255, 0);
+   this->active = false;
 }
 
 void GameObject::render()
@@ -65,4 +66,39 @@ btVector3 GameObject::getPosition()
   this->getMotionState()->getWorldTransform(trans);
   
   return trans.getOrigin();
+}
+
+void GameObject::setPosition(int x, int y)
+{
+  
+  btTransform transform;
+  transform.setIdentity();
+  transform.setOrigin(btVector3(x, y, 0));
+
+  this->setWorldTransform(transform);
+}
+
+bool GameObject::isActive()
+{
+  return this->active;
+}
+
+void GameObject::setActiveStatus(bool status)
+{
+  this->active = status;
+}
+
+double GameObject::getHalfWidth()
+{
+  return this->halfWidth;
+}
+
+double GameObject::getHalfHeight()
+{
+  return this->halfHeight;
+}
+
+double GameObject::getMass()
+{
+  return this->mass;
 }

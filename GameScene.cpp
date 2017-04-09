@@ -12,6 +12,8 @@ GameScene::GameScene()
 {
    this->TIME_STEP = 1.0/Allegro::FPS;
 
+   this->enemySpawner = new Spawner(5, 100, 50, 400);
+
    Allegro::initialize(Allegro::WIDTH, Allegro::HEIGHT, "AirMeshApplication");
    this->createDynamicsWorld();
    this->createGameObjects();
@@ -65,16 +67,14 @@ void GameScene::createGameObjects()
     const int WALL_COLLIDES_WITH = COLLIDES_WITH_OBJECTS;
 
     this->player = new GameObject(10, 10, 40, 300, 1);
+    this->player->setActiveStatus(true);
 
-    for (int i = 1; i <= 5; i++)
-    {
-      GameObject *enemy = new GameObject(5, 5, 50 + 20 * i, 400, 0);
-      enemy->setSprite(255, 0, 0);
-
-      this->dynamicsWorld->addRigidBody(enemy);
-    }
+    GameObject *enemy = new GameObject(5, 5, -100, -100, 1);
+    this->enemySpawner->setTemplate(enemy);
+    this->enemySpawner->spawn(this->dynamicsWorld);
 
     GameObject *ground = new GameObject(400, 0.1, 400, 10, 0);
+    ground->setActiveStatus(true);
 
     this->dynamicsWorld->addRigidBody(player);
     this->dynamicsWorld->addRigidBody(ground);
@@ -104,7 +104,7 @@ void GameScene::render()
   for (int j = this->getDynamicsWorld()->getNumCollisionObjects() - 1; j >= 0; --j)
   {
     GameObject *obj = (GameObject*)this->getDynamicsWorld()->getCollisionObjectArray()[j];
-    obj->render();
+    if(obj->isActive())obj->render();
   } 
 }
 
@@ -114,6 +114,6 @@ void GameScene::update()
       for (int j = this->getDynamicsWorld()->getNumCollisionObjects() - 1; j >= 0; --j) 
       {
             GameObject *obj = (GameObject*)this->getDynamicsWorld()->getCollisionObjectArray()[j];
-            obj->update();
+            if(obj->isActive())obj->update();
       }
 }
