@@ -71,3 +71,5 @@ const float Allegro::FPS = 60.f;
 ALLEGRO_DISPLAY* Allegro::display = NULL;
 ALLEGRO_TIMER* Allegro::timer = NULL;
 ALLEGRO_EVENT_QUEUE* Allegro::eventQueue = NULL;
+const int Allegro::WIDTH = 800;
+const int Allegro::HEIGHT = 600;

@@ -11,15 +11,22 @@ GameObject::GameObject(double halfWidth, double halfHeight, double x, double y, 
    //this->setUserIndex(-1);
    this->halfWidth = halfWidth;
    this->halfHeight = halfHeight;
+
+   this->color.setValue(0, 255, 0);
 }
 
 void GameObject::render()
 {  
   btVector3 position = this->getPosition();
 
-  const double X = position.getX(), Y = position.getY();
+  const double X = position.getX(), Y = -position.getY() + Allegro::HEIGHT;
 
-  al_draw_rectangle(X - this->halfWidth, Y - this->halfHeight, X + this->halfWidth, Y + this->halfHeight, al_map_rgb(0, 255, 0), 0);
+  al_draw_rectangle(X - this->halfWidth, Y - this->halfHeight, X + this->halfWidth, Y + this->halfHeight, al_map_rgb(this->color.getX(), this->color.getY(), this->color.getZ()), 0);
+}
+
+void GameObject::setSprite(float r, float g, float b)
+{
+   this->color.setValue(r, g, b);
 }
 
 void GameObject::update()

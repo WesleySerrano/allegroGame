@@ -12,7 +12,7 @@ GameScene::GameScene()
 {
    this->TIME_STEP = 1.0/Allegro::FPS;
 
-   Allegro::initialize(800, 600, "AirMeshApplication");
+   Allegro::initialize(Allegro::WIDTH, Allegro::HEIGHT, "AirMeshApplication");
    this->createDynamicsWorld();
    this->createGameObjects();
 }
@@ -64,8 +64,17 @@ void GameScene::createGameObjects()
     const int PLAYER_COLLIDES_WITH = COLLIDES_WITH_WALL | COLLIDES_WITH_OBJECTS;
     const int WALL_COLLIDES_WITH = COLLIDES_WITH_OBJECTS;
 
-    this->player = new GameObject(10, 10, 40, 30, 1);
-    GameObject *ground = new GameObject(400, 5, 400, 10, 0);
+    this->player = new GameObject(10, 10, 40, 300, 1);
+
+    for (int i = 1; i <= 5; i++)
+    {
+      GameObject *enemy = new GameObject(5, 5, 50 + 20 * i, 400, 0);
+      enemy->setSprite(255, 0, 0);
+
+      this->dynamicsWorld->addRigidBody(enemy);
+    }
+
+    GameObject *ground = new GameObject(400, 0.1, 400, 10, 0);
 
     this->dynamicsWorld->addRigidBody(player);
     this->dynamicsWorld->addRigidBody(ground);
@@ -73,7 +82,7 @@ void GameScene::createGameObjects()
 
 void GameScene::createDynamicsWorld()
 {
-  const double GRAVITY = -10.0f;
+  const double GRAVITY = -100.0f;
 
    btDbvtBroadphase *broadphase = new btDbvtBroadphase();
    btDefaultCollisionConfiguration *collisionConfiguration = new btDefaultCollisionConfiguration();

@@ -12,10 +12,14 @@ class GameObject : public btRigidBody
     btVector3 getPosition();
 
     void render();
+
+    void setSprite(float, float , float);
+
     void update();
   private:
     btRigidBody::btRigidBodyConstructionInfo createRigidBody(double, double , double, double, double);
 
     double halfWidth;
     double halfHeight;
+    btVector3 color;
 };

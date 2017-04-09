@@ -20,6 +20,8 @@ class Allegro
         static ALLEGRO_DISPLAY* display;
         static ALLEGRO_TIMER* timer;
         static ALLEGRO_EVENT_QUEUE* eventQueue;
+        static const int WIDTH;
+        static const int HEIGHT;
 
     private:
         static void construct(const int width, const int height,const char* title);
