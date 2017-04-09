@@ -1,3 +1,6 @@
+#ifndef GAMEOBJECT_H
+#define GAMEOBJECT_H
+
 #include <iostream>
 #include "Allegro.h"
 #include <btBulletDynamicsCommon.h>
@@ -23,3 +26,4 @@ class GameObject : public btRigidBody
     double halfHeight;
     btVector3 color;
 };
+#endif

@@ -1,3 +1,6 @@
+#ifndef GAMESCENE_H
+#define GAMESCENE_H
+
 #define BIT(x) (1<<(x))
 
 #include "GameObject.h"
@@ -27,3 +30,4 @@ class GameScene
 
         enum  collisionTypes {COLLIDES_WITH_WALL = 0, COLLIDES_WITH_OBJECTS = BIT(0)};
 };
+#endif
