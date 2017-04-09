@@ -70,7 +70,8 @@ void GameScene::createGameObjects()
     this->player->setActiveStatus(true);
 
     GameObject *enemy = new GameObject(5, 5, -100, -100, 1);
-    this->enemySpawner->setTemplate(enemy);
+    this->enemySpawner->setTemplateParameters(enemy);
+    this->enemySpawner->setTemplateSprite(255, 0, 0);
     this->enemySpawner->spawn(this->dynamicsWorld);
 
     GameObject *ground = new GameObject(400, 0.1, 400, 10, 0);

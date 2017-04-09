@@ -24,6 +24,7 @@ class GameObject : public btRigidBody
 
     void setActiveStatus(bool);
     void setPosition(int, int);
+    void setSprite(btVector3);
     void setSprite(float, float , float);
 
     void update();

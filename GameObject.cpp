@@ -30,6 +30,11 @@ void GameObject::setSprite(float r, float g, float b)
    this->color.setValue(r, g, b);
 }
 
+void GameObject::setSprite(btVector3 color)
+{
+   this->color = color;
+}
+
 void GameObject::update()
 {
 }

@@ -9,7 +9,8 @@ class Spawner
     Spawner();
     Spawner(int, int, int, int);
 
-    void setTemplate(GameObject*);
+    void setTemplateParameters(GameObject*);
+    void setTemplateSprite(float, float, float);
     void spawn(btDiscreteDynamicsWorld*);
   private:
     GameObject** objects;
@@ -22,5 +23,7 @@ class Spawner
     double templateHalfWidth;
     double templateHalfHeight;
     double templateMass;
+
+    btVector3 color;
 };
 #endif
