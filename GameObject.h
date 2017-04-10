@@ -28,7 +28,7 @@ class GameObject : public btRigidBody
     void setSprite(float, float , float);
 
     void update();
-  private:
+  protected:
     btRigidBody::btRigidBodyConstructionInfo createRigidBody(double, double , double, double, double);
 
     double halfWidth;

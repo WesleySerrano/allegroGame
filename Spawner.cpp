@@ -41,7 +41,6 @@ void Spawner::spawn(btDiscreteDynamicsWorld *dynamicsWorld)
   {
     int r = rand();
     int X = r%this->width + this->position[0];
-    std::cout << r << " " << r%this->width << " " << X << std::endl;
     this->activeObjects++;
 
     GameObject *enemy = new GameObject(this->templateHalfWidth, this->templateHalfHeight, X, this->position[1], this->templateMass);

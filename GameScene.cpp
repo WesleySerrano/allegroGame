@@ -12,7 +12,7 @@ GameScene::GameScene()
 {
    this->TIME_STEP = 1.0/Allegro::FPS;
 
-   this->enemySpawner = new Spawner(5, 100, 50, 400);
+   this->enemySpawner = new Spawner(5, 400, 50, 400);
 
    Allegro::initialize(Allegro::WIDTH, Allegro::HEIGHT, "AirMeshApplication");
    this->createDynamicsWorld();
@@ -56,9 +56,9 @@ void GameScene::loop()
   }
 }
 
-void GameScene::processEvent(ALLEGRO_EVENT event)
+void GameScene::processEvent(ALLEGRO_EVENT& event)
 {
-
+   this->player->processEvent(event);
 }
 
 void GameScene::createGameObjects()
@@ -66,7 +66,7 @@ void GameScene::createGameObjects()
     const int PLAYER_COLLIDES_WITH = COLLIDES_WITH_WALL | COLLIDES_WITH_OBJECTS;
     const int WALL_COLLIDES_WITH = COLLIDES_WITH_OBJECTS;
 
-    this->player = new GameObject(10, 10, 40, 300, 1);
+    this->player = new Player(10, 10, 40, 300, 1);
     this->player->setActiveStatus(true);
 
     GameObject *enemy = new GameObject(5, 5, -100, -100, 1);
@@ -74,7 +74,7 @@ void GameScene::createGameObjects()
     this->enemySpawner->setTemplateSprite(255, 0, 0);
     this->enemySpawner->spawn(this->dynamicsWorld);
 
-    GameObject *ground = new GameObject(400, 0.1, 400, 10, 0);
+    GameObject *ground = new GameObject(400, 1, 400, 10, 0);
     ground->setActiveStatus(true);
 
     this->dynamicsWorld->addRigidBody(player);

@@ -3,6 +3,7 @@
 
 #define BIT(x) (1<<(x))
 
+#include "Player.h"
 #include "Spawner.h"
 
 using namespace std; 
@@ -17,7 +18,7 @@ class GameScene
     private:
         void createGameObjects();
         void createDynamicsWorld();
-        void processEvent(ALLEGRO_EVENT);
+        void processEvent(ALLEGRO_EVENT&);
         void render();
         void setGravity(btVector3);
         void tick(btScalar timeStep);
@@ -26,7 +27,7 @@ class GameScene
 
         btDiscreteDynamicsWorld *dynamicsWorld;
         float TIME_STEP;
-        GameObject *player;
+        Player *player;
         Spawner *enemySpawner;
 
         enum  collisionTypes {COLLIDES_WITH_WALL = 0, COLLIDES_WITH_OBJECTS = BIT(0)};
