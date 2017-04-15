@@ -10,9 +10,13 @@ class Player : public GameObject
         Player(double, double , double, double, double);
 
         void processEvent(ALLEGRO_EVENT&);
+        void update();
     private:
         void moveLeft();
         void moveRight();
+
+        int movingDirection;
+        double horizontalMaxSpeed;
 };
 
 #endif

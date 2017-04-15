@@ -12,7 +12,7 @@ GameScene::GameScene()
 {
    this->TIME_STEP = 1.0/Allegro::FPS;
 
-   this->enemySpawner = new Spawner(5, 400, 50, 400);
+   this->enemySpawner = new Spawner(50, 5, 400, 50, 400, 1.0);
 
    Allegro::initialize(Allegro::WIDTH, Allegro::HEIGHT, "AirMeshApplication");
    this->createDynamicsWorld();
@@ -72,7 +72,6 @@ void GameScene::createGameObjects()
     GameObject *enemy = new GameObject(5, 5, -100, -100, 1);
     this->enemySpawner->setTemplateParameters(enemy);
     this->enemySpawner->setTemplateSprite(255, 0, 0);
-    this->enemySpawner->spawn(this->dynamicsWorld);
 
     GameObject *ground = new GameObject(400, 1, 400, 10, 0);
     ground->setActiveStatus(true);
@@ -112,8 +111,16 @@ void GameScene::render()
 void GameScene::update()
 {
       this->getDynamicsWorld()->stepSimulation(TIME_STEP, 10);
+      this->enemySpawner->spawn(this->dynamicsWorld);
       for (int j = this->getDynamicsWorld()->getNumCollisionObjects() - 1; j >= 0; --j) 
       {
+            if((Player*) this->getDynamicsWorld()->getCollisionObjectArray()[j])
+            {
+             Player* obj =  (Player*)this->getDynamicsWorld()->getCollisionObjectArray()[j];
+             if(obj->isActive())obj->update();
+             continue;             
+            }
+
             GameObject *obj = (GameObject*)this->getDynamicsWorld()->getCollisionObjectArray()[j];
             if(obj->isActive())obj->update();
       }
