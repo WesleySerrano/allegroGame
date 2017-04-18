@@ -14,6 +14,9 @@ GameObject::GameObject(double halfWidth, double halfHeight, double x, double y, 
 
    this->color.setValue(0, 255, 0);
    this->active = false;
+
+   this->setLinearFactor(btVector3(1, 1, 0));
+   this->setAngularFactor(btVector3(0, 0, 1));
 }
 
 void GameObject::render()

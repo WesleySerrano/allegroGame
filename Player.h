@@ -15,8 +15,7 @@ class Player : public GameObject
         void moveLeft();
         void moveRight();
 
-        int movingDirection;
-        double horizontalMaxSpeed;
+        btVector3 speed;
 };
 
 #endif
