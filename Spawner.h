@@ -1,7 +1,7 @@
 #ifndef SPAWNER_H
 #define SPAWNER_H
 
-#include "GameObject.h"
+#include "Enemy.h"
 #include <ctime>
 
 class Spawner
@@ -10,11 +10,11 @@ class Spawner
     Spawner();
     Spawner(int, int, int, int, int , double);
 
-    void setTemplateParameters(GameObject*);
+    void setTemplateParameters(Enemy*);
     void setTemplateSprite(float, float, float);
     void spawn(btDiscreteDynamicsWorld*);
   private:
-    GameObject** objects;
+    Enemy** objects;
     int NUMBER_OF_OBJECTS;
     int objectsPerRound;
     int activeObjects;

@@ -47,10 +47,11 @@ void Player::moveLeft()
 
 void Player::update()
 {
-  //if(this->speed.getX() != 0) this->setLinearVelocity(this->speed);
+  if(this->speed.getX() != 0) this->setLinearVelocity(this->speed);
 }
 
 void Player::moveRight()  
 {
     this->speed = btVector3(10, 0, 0);
+    this->setLinearVelocity(this->speed);
 }

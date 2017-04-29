@@ -13,7 +13,6 @@ class GameObject : public btRigidBody
     GameObject();
     GameObject(double, double , double, double, double);
 
-
     bool isActive();
     btVector3 getPosition();
     double getHalfWidth();

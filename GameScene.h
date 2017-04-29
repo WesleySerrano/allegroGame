@@ -11,9 +11,22 @@ using namespace std;
 class GameScene
 {
     public:
+        /**
+        * Constructor. Initializes Allegro directives, the simulation step, 
+        * the Physics world and the objects on scene
+        */
         GameScene();
-        void loop();
         
+        /**
+        * The game/scene's main loop. Updates each object's properties 
+        * each frame and the event queue.
+        */
+         void loop();
+        
+        /**
+        * Gets the variable describing the physics world
+        * @return The informations about the physics world
+        */
         btDiscreteDynamicsWorld* getDynamicsWorld() {return this->dynamicsWorld;}
     private:
         void createGameObjects();
