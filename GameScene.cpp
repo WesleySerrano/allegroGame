@@ -82,7 +82,7 @@ void GameScene::createGameObjects()
 
 void GameScene::createDynamicsWorld()
 {
-  const double GRAVITY = -100.0f;
+  const double GRAVITY = -98.0f;
 
    btDbvtBroadphase *broadphase = new btDbvtBroadphase();
    btDefaultCollisionConfiguration *collisionConfiguration = new btDefaultCollisionConfiguration();

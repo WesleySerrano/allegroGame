@@ -63,7 +63,12 @@ btRigidBody::btRigidBodyConstructionInfo GameObject::createRigidBody(double half
 
   btDefaultMotionState *motionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(x, y, 0)));
   btRigidBody::btRigidBodyConstructionInfo constructionInfo(mass, motionState, shape, localInertia);
-  //btRigidBody* body = new btRigidBody(constructionInfo); 
+
+  if(!isDynamic)
+  {
+    constructionInfo.m_friction = 1.5;
+    constructionInfo.m_restitution = 1.3;
+  }
 
    return constructionInfo;
 }

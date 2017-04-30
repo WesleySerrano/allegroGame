@@ -42,7 +42,7 @@ void Player::processEvent(ALLEGRO_EVENT& event)
 
 void Player::moveLeft()
 {
-    this->speed = btVector3(-10, 0, 0);
+    this->speed = btVector3(-50, 0, 0);
 }
 
 void Player::update()
@@ -52,6 +52,6 @@ void Player::update()
 
 void Player::moveRight()  
 {
-    this->speed = btVector3(10, 0, 0);
+    this->speed = btVector3(50, 0, 0);
     this->setLinearVelocity(this->speed);
 }
