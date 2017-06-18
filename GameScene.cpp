@@ -66,14 +66,31 @@ void GameScene::createGameObjects()
     const int PLAYER_COLLIDES_WITH = COLLIDES_WITH_WALL | COLLIDES_WITH_OBJECTS;
     const int WALL_COLLIDES_WITH = COLLIDES_WITH_OBJECTS;
 
-    this->player = new Player(10, 10, 40, 300, 1);
+    this->player = new Player(10, 10, 140, 300, 0);
     this->player->setActiveStatus(true);
 
     Enemy *enemy = new Enemy(5, 5, -100, -100, 1);
     this->enemySpawner->setTemplateParameters(enemy);
     this->enemySpawner->setTemplateSprite(255, 0, 0);
 
-    GameObject *ground = new GameObject(400, 1, 400, 10, 0);
+    GameObject *chainA = new GameObject(20, 2, 100, 400, 1);
+    chainA->setActiveStatus(true);
+    GameObject *chainB = new GameObject(20, 2, 139, 400, 1);
+    chainB->setActiveStatus(true);
+    GameObject *chainC = new GameObject(20, 2, 179, 400, 1);
+    chainC->setActiveStatus(true);
+    
+    btPoint2PointConstraint* c0 = new btPoint2PointConstraint(*chainA, btVector3(0, 0, 0));
+    btPoint2PointConstraint* c1 = new btPoint2PointConstraint(*chainA, *chainB, btVector3(10, 2, 0), btVector3(0.5, 2, 0));
+
+    this->dynamicsWorld->addConstraint(c0);
+    //this->dynamicsWorld->addConstraint(c1);
+
+    this->dynamicsWorld->addRigidBody(chainA);
+    this->dynamicsWorld->addRigidBody(chainB);
+    this->dynamicsWorld->addRigidBody(chainC);
+
+    GameObject *ground = new GameObject(400, 4, 400, 10, 0);
     ground->setActiveStatus(true);
 
     this->dynamicsWorld->addRigidBody(player);
