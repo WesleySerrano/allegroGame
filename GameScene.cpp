@@ -73,22 +73,13 @@ void GameScene::createGameObjects()
     this->enemySpawner->setTemplateParameters(enemy);
     this->enemySpawner->setTemplateSprite(255, 0, 0);
 
-    GameObject *chainA = new GameObject(20, 2, 100, 400, 1);
-    chainA->setActiveStatus(true);
-    GameObject *chainB = new GameObject(20, 2, 139, 400, 1);
-    chainB->setActiveStatus(true);
-    GameObject *chainC = new GameObject(20, 2, 179, 400, 1);
-    chainC->setActiveStatus(true);
+    const int NUM_CHAIN_NODES = 30;
+    float startX = 100, startY = 400, halfWidth = 4, halfHeight = 4, mass = 1;
     
-    btPoint2PointConstraint* c0 = new btPoint2PointConstraint(*chainA, btVector3(0, 0, 0));
-    btPoint2PointConstraint* c1 = new btPoint2PointConstraint(*chainA, *chainB, btVector3(10, 2, 0), btVector3(0.5, 2, 0));
+    const float DISTANCE_CONSTRAINT = 2;
+    const float OFFSET = 1;
 
-    this->dynamicsWorld->addConstraint(c0);
-    //this->dynamicsWorld->addConstraint(c1);
-
-    this->dynamicsWorld->addRigidBody(chainA);
-    this->dynamicsWorld->addRigidBody(chainB);
-    this->dynamicsWorld->addRigidBody(chainC);
+    this->sb = new SoftBody(NUM_CHAIN_NODES,startX,startY,OFFSET,DISTANCE_CONSTRAINT, 1, this->dynamicsWorld);
 
     GameObject *ground = new GameObject(400, 4, 400, 10, 0);
     ground->setActiveStatus(true);
@@ -118,6 +109,7 @@ void GameScene::setGravity(btVector3 gravity)
 
 void GameScene::render()
 {
+  this->sb->render();
   for (int j = this->getDynamicsWorld()->getNumCollisionObjects() - 1; j >= 0; --j)
   {
     GameObject *obj = (GameObject*)this->getDynamicsWorld()->getCollisionObjectArray()[j];

@@ -5,6 +5,7 @@
 
 #include "Player.h"
 #include "Spawner.h"
+#include "SoftBody.h"
 
 using namespace std; 
 
@@ -42,6 +43,7 @@ class GameScene
         float TIME_STEP;
         Player *player;
         Spawner *enemySpawner;
+        SoftBody* sb;
 
         enum  collisionTypes {COLLIDES_WITH_WALL = 0, COLLIDES_WITH_OBJECTS = BIT(0)};
 };
