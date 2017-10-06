@@ -7,7 +7,7 @@ class SoftBody : public GameObject
 {
     public:
         SoftBody();
-        SoftBody(int, double, double , double, double, double, btDiscreteDynamicsWorld*);
+        SoftBody(int, double, double , double, double, double, btDiscreteDynamicsWorld*, bool fixed = false);
         void render();
 
     private:

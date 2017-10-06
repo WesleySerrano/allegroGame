@@ -5,12 +5,12 @@ SoftBody::SoftBody() : GameObject()
 
 }
 
-SoftBody::SoftBody(int numberOfNodes, double startX, double startY, double startOffset, double maxOffset, double nodesMass, btDiscreteDynamicsWorld* dynamicsWorld)
+SoftBody::SoftBody(int numberOfNodes, double startX, double startY, double startOffset, double maxOffset, double nodesMass, btDiscreteDynamicsWorld* dynamicsWorld, bool fixed)
 {
   this->numberOfNodes = numberOfNodes;
   this->nodes = new GameObject*[numberOfNodes];
 
-   const float HALF_WIDTH = 0.5, HALF_HEIGHT = 0.5;
+   const float HALF_WIDTH = 2, HALF_HEIGHT = 2;
 
   for(int i = 0; i < numberOfNodes; i++)
   {
@@ -24,11 +24,17 @@ SoftBody::SoftBody(int numberOfNodes, double startX, double startY, double start
       }
       dynamicsWorld->addRigidBody(this->nodes[i]);
   }
+
+  if(fixed)
+  {
+    dynamicsWorld->addConstraint(new btPoint2PointConstraint(*this->nodes[0], btVector3(0,0,0)));
+    dynamicsWorld->addConstraint(new btPoint2PointConstraint(*this->nodes[numberOfNodes - 1], btVector3(0,0,0)));
+  }
 }
 
 void SoftBody::render()
 {
-    for(int i = 1; i < numberOfNodes; i++)
+    for(int i = 1; i < this->numberOfNodes; i++)
     {
         btVector3 p0 = this->nodes[i - 1]->getPosition();
         btVector3 p1 = this->nodes[i]->getPosition();

@@ -76,10 +76,10 @@ void GameScene::createGameObjects()
     const int NUM_CHAIN_NODES = 30;
     float startX = 100, startY = 400, halfWidth = 4, halfHeight = 4, mass = 1;
     
-    const float DISTANCE_CONSTRAINT = 2;
-    const float OFFSET = 1;
+    const float DISTANCE_CONSTRAINT = 4;
+    const float OFFSET = 8;
 
-    this->sb = new SoftBody(NUM_CHAIN_NODES,startX,startY,OFFSET,DISTANCE_CONSTRAINT, 1, this->dynamicsWorld);
+    this->sb = new SoftBody(NUM_CHAIN_NODES,startX,startY,OFFSET,DISTANCE_CONSTRAINT, 1, this->dynamicsWorld, true);
 
     GameObject *ground = new GameObject(400, 4, 400, 10, 0);
     ground->setActiveStatus(true);
