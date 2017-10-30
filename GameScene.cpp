@@ -10,10 +10,22 @@ void tickCallback(btDynamicsWorld *world, btScalar timeStep)
 
 void GameScene::addObjectToTriangulation(btVector3 position, btVector3* corners)
 {
-  this->verticesOnScene->numberofpoints += 4;
-  this->verticesOnScene->numberofedges += 4;
-  void* newArray = realloc(this->verticesOnScene->pointlist, 3*this->verticesOnScene->numberofpoints*sizeof(REAL));
+  const short NUMBER_OF_COORDINATES = 3;
+  const short NUMBER_OF_NEW_OBJECTS = 4;
+  const short PREVIOUS_NUMBER_OF_POINTS = this->verticesOnScene->numberofpoints;
+
+  this->verticesOnScene->numberofpoints += NUMBER_OF_NEW_OBJECTS;
+  this->verticesOnScene->numberofedges += NUMBER_OF_NEW_OBJECTS;
+  
+  void* newArray = realloc(this->verticesOnScene->pointlist, NUMBER_OF_COORDINATES*this->verticesOnScene->numberofpoints*sizeof(REAL));
   this->verticesOnScene->pointlist = (double*)newArray;
+  
+   for(short point = 0; point < 4; point++)
+  {
+    this->verticesOnScene->pointlist[PREVIOUS_NUMBER_OF_POINTS + (3 * point)] = corners[point].getX();
+    this->verticesOnScene->pointlist[PREVIOUS_NUMBER_OF_POINTS + (3 * point) + 1] = corners[point].getY();
+    this->verticesOnScene->pointlist[PREVIOUS_NUMBER_OF_POINTS + (3 * point) + 2] = corners[point].getZ() ;
+  }
 }
 
 GameScene::GameScene()
@@ -110,7 +122,10 @@ void GameScene::createGameObjects()
 
     this->addObjectToTriangulation(this->player->getPosition(),playerCorners);
     this->addObjectToTriangulation(ground->getPosition(),groundCorners);
-    cout << "Pontos para triangular: " << this->verticesOnScene->numberofpoints << endl;
+    /* for(short i = 0; i < 8; i++)
+    {
+      cout << "(x,y,z) = (" << this->verticesOnScene->pointlist[3*i] << " "<< this->verticesOnScene->pointlist[3*i + 1] << " "<< this->verticesOnScene->pointlist[3*i + 2] << ")\n";
+    } */
 
     this->dynamicsWorld->addRigidBody(player);
     this->dynamicsWorld->addRigidBody(ground);
