@@ -8,6 +8,14 @@ void tickCallback(btDynamicsWorld *world, btScalar timeStep)
     }
 }
 
+void GameScene::addObjectToTriangulation(btVector3 position, btVector3* corners)
+{
+  this->verticesOnScene->numberofpoints += 4;
+  this->verticesOnScene->numberofedges += 4;
+  void* newArray = realloc(this->verticesOnScene->pointlist, 3*this->verticesOnScene->numberofpoints*sizeof(REAL));
+  this->verticesOnScene->pointlist = (double*)newArray;
+}
+
 GameScene::GameScene()
 {
    this->TIME_STEP = 1.0/Allegro::FPS;
@@ -15,8 +23,19 @@ GameScene::GameScene()
    this->enemySpawner = new Spawner(100, 5, 400, 50, 400, 1.0);
 
    Allegro::initialize(Allegro::WIDTH, Allegro::HEIGHT, "AirMeshApplication");
+   this->initializeTetGen();
    this->createDynamicsWorld();
    this->createGameObjects();
+}
+
+void GameScene::initializeTetGen()
+{  
+  this->verticesOnScene = new tetgenio;
+
+  this->verticesOnScene->firstnumber = 0;
+  this->verticesOnScene->mesh_dim = 3;
+  this->verticesOnScene->numberofpoints = 0;
+  this->verticesOnScene->numberofedges = 0;  
 }
 
 void GameScene::loop()
@@ -68,6 +87,7 @@ void GameScene::createGameObjects()
 
     this->player = new Player(10, 10, 140, 300, 0);
     this->player->setActiveStatus(true);
+    this->player->setVisibleStatus(true);
 
     Enemy *enemy = new Enemy(5, 5, -100, -100, 1);
     this->enemySpawner->setTemplateParameters(enemy);
@@ -79,10 +99,18 @@ void GameScene::createGameObjects()
     const float DISTANCE_CONSTRAINT = 4;
     const float OFFSET = 8;
 
-    this->sb = new SoftBody(NUM_CHAIN_NODES,startX,startY,OFFSET,DISTANCE_CONSTRAINT, 1, this->dynamicsWorld, true);
+    this->sb = new SoftBody(NUM_CHAIN_NODES,startX,startY,OFFSET,DISTANCE_CONSTRAINT, 1, this->dynamicsWorld, false);
 
     GameObject *ground = new GameObject(400, 4, 400, 10, 0);
     ground->setActiveStatus(true);
+    ground->setVisibleStatus(true);
+
+    btVector3* playerCorners = player->getCorners();    
+    btVector3* groundCorners = ground->getCorners();
+
+    this->addObjectToTriangulation(this->player->getPosition(),playerCorners);
+    this->addObjectToTriangulation(ground->getPosition(),groundCorners);
+    cout << "Pontos para triangular: " << this->verticesOnScene->numberofpoints << endl;
 
     this->dynamicsWorld->addRigidBody(player);
     this->dynamicsWorld->addRigidBody(ground);
@@ -113,7 +141,7 @@ void GameScene::render()
   for (int j = this->getDynamicsWorld()->getNumCollisionObjects() - 1; j >= 0; --j)
   {
     GameObject *obj = (GameObject*)this->getDynamicsWorld()->getCollisionObjectArray()[j];
-    if(obj->isActive())obj->render();
+    if(obj->isVisible())obj->render();
   } 
 }
 

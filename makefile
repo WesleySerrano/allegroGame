@@ -8,8 +8,8 @@ LIBRARIES = $(BULLET_LIBRARIES) $(ALLEGRO_LIBRARIES)
 INCLUDE_PATHS = $(BULLET_LIBRARIES_PATHS)
 
 
-main: main.cpp GameObject GameScene Spawner Player Enemy Allegro SoftBody Delaunay
-	$(COMPILER) $(INCLUDE_PATHS) main.cpp GameObject.o Spawner.o Player.o Enemy.o SoftBody.o GameScene.o Allegro.o -o main $(LIBRARIES)
+main: main.cpp GameObject GameScene Spawner Player Enemy Allegro SoftBody Delaunay Predicates TetGen
+	$(COMPILER) $(INCLUDE_PATHS) main.cpp GameObject.o Spawner.o Player.o Enemy.o SoftBody.o GameScene.o Allegro.o predicates.o tetgen.o -o main $(LIBRARIES)
 
 Spawner: Spawner.h
 	$(COMPILER) $(LIBRARIES) $(INCLUDE_PATHS) -c Spawner.cpp
@@ -34,6 +34,12 @@ Delaunay: Delaunay.h
 
 Allegro: Allegro.h
 	$(COMPILER) $(ALLEGRO_LIBRARIES) -c Allegro.cpp
+
+TetGen: tetgen.h
+	$(COMPILER) -O3 -c tetgen.cpp -lm
+
+Predicates: 
+	$(COMPILER) -O0 -c predicates.cpp
 
 clean:
 	rm main *.o

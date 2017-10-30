@@ -72,6 +72,7 @@ void Spawner::spawn(btDiscreteDynamicsWorld *dynamicsWorld)
         enemy->setSprite(this->color);
 
         enemy->setActiveStatus(true);
+        enemy->setVisibleStatus(true);
         dynamicsWorld->addRigidBody(enemy);
     }
   }

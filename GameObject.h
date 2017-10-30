@@ -14,7 +14,9 @@ class GameObject : public btRigidBody
     GameObject(double, double , double, double, double);
 
     bool isActive();
+    bool isVisible();
     btVector3 getPosition();
+    btVector3* getCorners();
     double getHalfWidth();
     double getHalfHeight();
     double getMass();    
@@ -25,6 +27,7 @@ class GameObject : public btRigidBody
     void setPosition(int, int);
     void setSprite(btVector3);
     void setSprite(float, float , float);
+    void setVisibleStatus(bool);
 
     void update();
   protected:
@@ -35,5 +38,7 @@ class GameObject : public btRigidBody
     double mass;
     btVector3 color;
     bool active;
+    bool visible;
+
 };
 #endif

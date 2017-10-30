@@ -14,6 +14,7 @@ GameObject::GameObject(double halfWidth, double halfHeight, double x, double y, 
 
    this->color.setValue(0, 255, 0);
    this->active = false;
+   this->visible = false;
 
    this->setLinearFactor(btVector3(1, 1, 0));
    this->setAngularFactor(btVector3(0, 0, 1));
@@ -91,6 +92,21 @@ void GameObject::setPosition(int x, int y)
   this->setWorldTransform(transform);
 }
 
+btVector3* GameObject::getCorners()
+{
+  btVector3 position = this->getPosition();
+  double X = position.getX(), Y = position.getY();
+
+  btVector3* results = new btVector3[4];
+
+  results[0] = btVector3(X - halfWidth, Y - halfHeight,0);
+  results[1] = btVector3(X - halfWidth, Y + halfHeight,0);
+  results[2] = btVector3(X + halfWidth, Y - halfHeight,0);
+  results[3] = btVector3(X + halfWidth, Y + halfHeight,0);
+
+  return results;
+}
+
 bool GameObject::isActive()
 {
   return this->active;
@@ -99,6 +115,16 @@ bool GameObject::isActive()
 void GameObject::setActiveStatus(bool status)
 {
   this->active = status;
+}
+
+bool GameObject::isVisible()
+{
+  return this->visible;
+}
+
+void GameObject::setVisibleStatus(bool status)
+{
+  this->visible = status;
 }
 
 double GameObject::getHalfWidth()

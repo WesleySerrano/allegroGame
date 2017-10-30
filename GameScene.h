@@ -7,6 +7,8 @@
 #include "Spawner.h"
 #include "SoftBody.h"
 
+#include "tetgen.h"
+
 using namespace std; 
 
 class GameScene
@@ -30,20 +32,23 @@ class GameScene
         */
         btDiscreteDynamicsWorld* getDynamicsWorld() {return this->dynamicsWorld;}
     private:
+        void addObjectToTriangulation(btVector3, btVector3*);
         void createGameObjects();
         void createDynamicsWorld();
+        void initializeTetGen();
         void processEvent(ALLEGRO_EVENT&);
         void render();
         void setGravity(btVector3);
         void tick(btScalar timeStep);
         void update();
 
-
         btDiscreteDynamicsWorld *dynamicsWorld;
         float TIME_STEP;
         Player *player;
         Spawner *enemySpawner;
         SoftBody* sb;
+
+        tetgenio* verticesOnScene;
 
         enum  collisionTypes {COLLIDES_WITH_WALL = 0, COLLIDES_WITH_OBJECTS = BIT(0)};
 };
