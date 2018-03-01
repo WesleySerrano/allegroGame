@@ -8,8 +8,6 @@
 #include "Spawner.h"
 #include "SoftBody.h"
 
-#include "tetgen.h"
-
 using namespace std; 
 
 class GameScene
@@ -49,8 +47,6 @@ class GameScene
         Player *player;
         Spawner *enemySpawner;
         SoftBody* sb;
-
-        tetgenio *verticesOnScene, *triangulation;
 
         enum  collisionTypes {COLLIDES_WITH_WALL = 0, COLLIDES_WITH_OBJECTS = BIT(0)};
 };
