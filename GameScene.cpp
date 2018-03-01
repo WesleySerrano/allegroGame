@@ -24,7 +24,7 @@ void GameScene::addObjectToTriangulation(btVector3 position, btVector3* corners)
   {
     this->verticesOnScene->pointlist[PREVIOUS_NUMBER_OF_POINTS + (3 * point)] = corners[point].getX();
     this->verticesOnScene->pointlist[PREVIOUS_NUMBER_OF_POINTS + (3 * point) + 1] = corners[point].getY();
-    this->verticesOnScene->pointlist[PREVIOUS_NUMBER_OF_POINTS + (3 * point) + 2] = corners[point].getZ() ;
+    this->verticesOnScene->pointlist[PREVIOUS_NUMBER_OF_POINTS + (3 * point) + 2] = 0.0;//corners[point].getZ() ;
   }
 }
 
@@ -43,6 +43,9 @@ GameScene::GameScene()
 void GameScene::initializeTetGen()
 {  
   this->verticesOnScene = new tetgenio;
+  this->verticesOnScene->initialize();
+  this->triangulation = new tetgenio;
+  this->triangulation->initialize();
 
   this->verticesOnScene->firstnumber = 0;
   this->verticesOnScene->mesh_dim = 3;
@@ -75,7 +78,8 @@ void GameScene::loop()
     {
       break;
     }
-
+    tetrahedralize("veeQ", this->verticesOnScene, this->triangulation);
+    this->outputTriangulation();
     if(refresh && al_is_event_queue_empty(Allegro::eventQueue))
     {
       refresh = false;
@@ -84,6 +88,24 @@ void GameScene::loop()
       al_flip_display();
       al_clear_to_color(al_map_rgb(0, 0, 0));
     }
+  }
+}
+
+void GameScene::outputTriangulation()
+{
+  std::cout << "Delaunay information:" << std::endl;
+  std::cout << "numberofpoints: " << this->triangulation->numberofpoints << std::endl;
+  std::cout << "numberofedges: " << this->triangulation->numberofedges << std::endl;
+  std::cout << "numberoftrifaces: " << this->triangulation->numberoftrifaces << std::endl;
+  std::cout << "numberoftetrahedra: " << this->triangulation->numberoftetrahedra << std::endl;
+  std::cout << "numberofcorners: " << this->triangulation->numberofcorners << std::endl;
+  std::cout << "edges are:" << std::endl;
+  for (int n=0; n<this->triangulation->numberofedges; ++n) {
+    int n0 = this->triangulation->edgelist[2*n + 0];
+    int n1 = this->triangulation->edgelist[2*n + 1];
+    REAL *u = &this->triangulation->pointlist[3*n0];
+    REAL *v = &this->triangulation->pointlist[3*n1];
+    printf("(%f %f %f) -> (%f %f %f)\n", u[0], u[1], u[2], v[0], v[1], v[2]);
   }
 }
 

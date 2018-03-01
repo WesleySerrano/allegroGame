@@ -3,6 +3,7 @@
 
 #define BIT(x) (1<<(x))
 
+#include <cstdio>
 #include "Player.h"
 #include "Spawner.h"
 #include "SoftBody.h"
@@ -36,6 +37,7 @@ class GameScene
         void createGameObjects();
         void createDynamicsWorld();
         void initializeTetGen();
+        void outputTriangulation();
         void processEvent(ALLEGRO_EVENT&);
         void render();
         void setGravity(btVector3);
@@ -48,7 +50,7 @@ class GameScene
         Spawner *enemySpawner;
         SoftBody* sb;
 
-        tetgenio* verticesOnScene;
+        tetgenio *verticesOnScene, *triangulation;
 
         enum  collisionTypes {COLLIDES_WITH_WALL = 0, COLLIDES_WITH_OBJECTS = BIT(0)};
 };

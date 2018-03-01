@@ -98,7 +98,7 @@ btVector3* GameObject::getCorners()
   double X = position.getX(), Y = position.getY();
 
   btVector3* results = new btVector3[4];
-  cout << X << ", " << Y <<  ", " << halfWidth << ", " << halfHeight << endl;
+  std::cout << X << ", " << Y <<  ", " << position.getZ() << ", " << halfWidth << ", " << halfHeight << std::endl;
   results[0] = btVector3(X - halfWidth, Y - halfHeight,0);
   results[1] = btVector3(X - halfWidth, Y + halfHeight,0);
   results[2] = btVector3(X + halfWidth, Y - halfHeight,0);
