@@ -53,7 +53,7 @@ void GameScene::addObjectToTriangulation(btVector3 position, btVector3* corners)
 GameScene::GameScene()
 {
    this->TIME_STEP = 1.0/Allegro::FPS;
-    const int NUMBER_OF_ENEMIES = 5;
+    const int NUMBER_OF_ENEMIES = 100;
     const int OBJECTS_PER_ROUND = 5;
     const int WIDTH = 400;
     const int HORIZONTAL_POSITION = 50;
@@ -293,13 +293,11 @@ void GameScene::triangulateObjects()
     const long P1 = out.trianglelist[3*i+1];
     const long P2 = out.trianglelist[3*i+2];    
     
-    const double X0 = out.pointlist[2*P0-2], Y0 = Allegro::HEIGHT-out.pointlist[2*P0 - 1];
-    const double X1 = out.pointlist[2*P1-2], Y1 = Allegro::HEIGHT-out.pointlist[2*P1 - 1];
-    const double X2 = out.pointlist[2*P2-2], Y2 = Allegro::HEIGHT-out.pointlist[2*P2 - 1];
+    const double X0 = out.pointlist[2*P0], Y0 = Allegro::HEIGHT-out.pointlist[2*P0 + 1];
+    const double X1 = out.pointlist[2*P1], Y1 = Allegro::HEIGHT-out.pointlist[2*P1 + 1];
+    const double X2 = out.pointlist[2*P2], Y2 = Allegro::HEIGHT-out.pointlist[2*P2 + 1];    
 
-    
-
-    al_draw_triangle(X0, Y0, X1, Y1, X2, Y2, al_map_rgb(255,255,255),1);
+    al_draw_triangle(X0, Y0, X1, Y1, X2, Y2, al_map_rgb(255,255,255),0);
   }
 }
 
