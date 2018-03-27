@@ -17,6 +17,30 @@ void printTriangleIO(triangulateio data)
   std::cout << "Number of segments: " << data.numberofsegments << std::endl;
   std::cout << "Number of regions: " << data.numberofregions << std::endl;
   std::cout << "Number of points attributes: " << data.numberofpointattributes << std::endl;
+
+  std::cout << "Points:" << std::endl;
+  for(int i = 0; i < 2*data.numberofpoints; i++)
+  {
+    if(i%2==0) std::cout << "(" << data.pointlist[i] << ",";
+    else std::cout << data.pointlist[i] << ") ";
+  }
+  std::cout<<std::endl;
+  
+  std::cout << "Holes:" << std::endl;
+  for(int i = 0; i < 2*data.numberofholes; i++)
+  {
+    if(i%2==0) std::cout << "(" << data.holelist[i] << ",";
+    else std::cout << data.holelist[i] << ") ";
+  }
+  std::cout<<std::endl;
+
+  std::cout << "Segments:" << std::endl;
+  for(int i = 0; i < 2*data.numberofsegments; i++)
+  {
+    if(i%2==0) std::cout << "(" << data.segmentlist[i] << " - ";
+    else std::cout << data.segmentlist[i] << ") ";
+  }
+  std::cout<<std::endl<<std::endl;
 }
 
 void GameScene::addObjectToTriangulation(btVector3 position, btVector3* corners)
@@ -154,7 +178,7 @@ void GameScene::triangulateObjects()
   char* triswitches;
   struct triangulateio in, out, vorout;
   const long NUMBER_OF_OBJECTS = this->getDynamicsWorld()->getNumCollisionObjects();
-  long pointsCount = 0;
+  long pointsCount = 0, segmentsCount = 0;  
   
   in.numberofpoints = 4*(NUMBER_OF_OBJECTS + 1);
   in.numberofpointattributes = 0;
@@ -164,10 +188,9 @@ void GameScene::triangulateObjects()
   in.pointlist = (REAL *) malloc(in.numberofpoints * 2 * sizeof(REAL));
   in.segmentlist = (int *) malloc(in.numberofsegments*2*sizeof(int));
   in.holelist = (REAL *) malloc(in.numberofholes*2*sizeof(REAL));
-  in.pointattributelist = (REAL *) malloc(in.numberofpoints *
-                                          in.numberofpointattributes *
-                                          sizeof(REAL));
+  in.pointattributelist = (REAL *) NULL;
   in.pointmarkerlist = (int *) NULL;
+  in.segmentmarkerlist = (int *) NULL;
   
   for (int j = NUMBER_OF_OBJECTS - 1; j >= 0; --j)
   {
@@ -182,14 +205,15 @@ void GameScene::triangulateObjects()
     if(in.numberofsegments > 0)
     {
      const long BASE_INDEX = pointsCount/2;
-     in.segmentlist[BASE_INDEX] = BASE_INDEX;
-     in.segmentlist[BASE_INDEX+1] = BASE_INDEX+1;
-     in.segmentlist[BASE_INDEX+2] = BASE_INDEX+1;
-     in.segmentlist[BASE_INDEX+3] = BASE_INDEX+2;
-     in.segmentlist[BASE_INDEX+4] = BASE_INDEX+2;
-     in.segmentlist[BASE_INDEX+5] = BASE_INDEX+3;
-     in.segmentlist[BASE_INDEX+6] = BASE_INDEX+3;
-     in.segmentlist[BASE_INDEX+7] = BASE_INDEX;
+        
+     in.segmentlist[segmentsCount++] = BASE_INDEX;
+     in.segmentlist[segmentsCount++] = BASE_INDEX+1;
+     in.segmentlist[segmentsCount++] = BASE_INDEX+1;
+     in.segmentlist[segmentsCount++] = BASE_INDEX+2;
+     in.segmentlist[segmentsCount++] = BASE_INDEX+2;
+     in.segmentlist[segmentsCount++] = BASE_INDEX+3;
+     in.segmentlist[segmentsCount++] = BASE_INDEX+3;
+     in.segmentlist[segmentsCount++] = BASE_INDEX;
     }
 
     in.pointlist[pointsCount++] = X - halfWidth;
@@ -207,19 +231,19 @@ void GameScene::triangulateObjects()
      in.holelist[2 * j + 1] = Y;
     }
   } 
-
   if(in.numberofsegments > 0)
   {
     const long BASE_INDEX = pointsCount/2;
-    in.segmentlist[BASE_INDEX] = BASE_INDEX;
-    in.segmentlist[BASE_INDEX+1] = BASE_INDEX+1;
-    in.segmentlist[BASE_INDEX+2] = BASE_INDEX+1;
-    in.segmentlist[BASE_INDEX+3] = BASE_INDEX+2;
-    in.segmentlist[BASE_INDEX+4] = BASE_INDEX+2;
-    in.segmentlist[BASE_INDEX+5] = BASE_INDEX+3;
-    in.segmentlist[BASE_INDEX+6] = BASE_INDEX+3;
-    in.segmentlist[BASE_INDEX+7] = BASE_INDEX;
+    in.segmentlist[segmentsCount++] = BASE_INDEX;
+    in.segmentlist[segmentsCount++] = BASE_INDEX+1;
+    in.segmentlist[segmentsCount++] = BASE_INDEX+1;
+    in.segmentlist[segmentsCount++] = BASE_INDEX+2;
+    in.segmentlist[segmentsCount++] = BASE_INDEX+2;
+    in.segmentlist[segmentsCount++] = BASE_INDEX+3;
+    in.segmentlist[segmentsCount++] = BASE_INDEX+3;
+    in.segmentlist[segmentsCount++] = BASE_INDEX;
   }
+
   in.pointlist[pointsCount++] = 0.0;
   in.pointlist[pointsCount++] = 0.0;
   in.pointlist[pointsCount++] = Allegro::WIDTH;
@@ -250,9 +274,11 @@ void GameScene::triangulateObjects()
   vorout.edgelist = (int *) NULL;
   vorout.normlist = (REAL *) NULL; 
 
-  std::string switchesStr = "pBz";
+  std::string switchesStr = "pQz";
   char *switches = new char[switchesStr.length() + 1];
   strcpy(switches,switchesStr.c_str());
+
+  //printTriangleIO(in);
   
   triangulate(switches, &in, &out, &vorout);  
 
@@ -260,19 +286,15 @@ void GameScene::triangulateObjects()
   {
     const long P0 = out.trianglelist[3*i];
     const long P1 = out.trianglelist[3*i+1];
-    const long P2 = out.trianglelist[3*i+2];
-    std::cout << P0<< " "<< P1<< " "<< P2<< " "<< out.numberofsegments<< " "<< out.numberofedges<< " "<< out.numberofpoints<<std::endl;
-    std::cout << 2*P0 - 2 << " - " << 2*P0 - 1 << std::endl;
-    std::cout << 2*P1 - 2 << " - " << 2*P1 - 1 << std::endl;
-    std::cout << 2*P2 - 2 << " - " << 2*P2 - 1 << std::endl;
-    std::cout << out.pointlist[2*out.numberofpoints-1] << std::endl;
-    std::cout << out.numberoftriangles << " " << out.numberofpoints << std::endl;
-    const double X0 = out.pointlist[2*P0-2], Y0 = out.pointlist[2*P0 - 1];
-    const double X1 = out.pointlist[2*P1-2], Y1 = out.pointlist[2*P1 - 1];
+    const long P2 = out.trianglelist[3*i+2];    
+    
+    const double X0 = out.pointlist[2*P0-2], Y0 = Allegro::HEIGHT-out.pointlist[2*P0 - 1];
+    const double X1 = out.pointlist[2*P1-2], Y1 = Allegro::HEIGHT-out.pointlist[2*P1 - 1];
+    const double X2 = out.pointlist[2*P2-2], Y2 = Allegro::HEIGHT-out.pointlist[2*P2 - 1];
 
-    //std::cout << X0<< " "<< Y0<< " "<< X1<< " "<< Y1<< " "<< X2<< " "<< Y2<<std::endl;
+    
 
-    al_draw_triangle(out.pointlist[2*P0 - 2], out.pointlist[2*P0 - 1], out.pointlist[2*P1 - 2], out.pointlist[2*P1 - 1], out.pointlist[2*P2 - 2], out.pointlist[2*P2 - 1], al_map_rgb(255, 255, 255),1);
+    al_draw_triangle(X0, Y0, X1, Y1, X2, Y2, al_map_rgb(255,255,255),1);
   }
 }
 
