@@ -53,8 +53,13 @@ void GameScene::addObjectToTriangulation(btVector3 position, btVector3* corners)
 GameScene::GameScene()
 {
    this->TIME_STEP = 1.0/Allegro::FPS;
-
-   this->enemySpawner = new Spawner(100, 5, 400, 50, 400, 1.0);
+    const int NUMBER_OF_ENEMIES = 5;
+    const int OBJECTS_PER_ROUND = 5;
+    const int WIDTH = 400;
+    const int HORIZONTAL_POSITION = 50;
+    const int VERTICAL_POSITION = 400;
+    const double TIME_INTERVAL = 1.0;
+   this->enemySpawner = new Spawner(NUMBER_OF_ENEMIES, OBJECTS_PER_ROUND, WIDTH, HORIZONTAL_POSITION, VERTICAL_POSITION, TIME_INTERVAL);
 
    Allegro::initialize(Allegro::WIDTH, Allegro::HEIGHT, "AirMeshApplication");
 
@@ -124,7 +129,7 @@ void GameScene::createGameObjects()
     const float DISTANCE_CONSTRAINT = 4;
     const float OFFSET = 8;
 
-    //this->sb = new SoftBody(NUM_CHAIN_NODES,startX,startY,OFFSET,DISTANCE_CONSTRAINT, 1, this->dynamicsWorld, false);
+  this->sb = new SoftBody(NUM_CHAIN_NODES,startX,startY,OFFSET,DISTANCE_CONSTRAINT, 1, this->dynamicsWorld, false);
 
     GameObject *ground = new GameObject(400, 4, 400, 10, 0);
     ground->setActiveStatus(true);
@@ -165,7 +170,7 @@ void GameScene::setGravity(btVector3 gravity)
 
 void GameScene::render()
 {
-  //this->sb->render();
+  this->sb->render();
   for (int j = this->getDynamicsWorld()->getNumCollisionObjects() - 1; j >= 0; --j)
   {
     GameObject *obj = (GameObject*)this->getDynamicsWorld()->getCollisionObjectArray()[j];
