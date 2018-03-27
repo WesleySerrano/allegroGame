@@ -10,7 +10,7 @@ SoftBody::SoftBody(int numberOfNodes, double startX, double startY, double start
   this->numberOfNodes = numberOfNodes;
   this->nodes = new GameObject*[numberOfNodes];
 
-   const float HALF_WIDTH = 2, HALF_HEIGHT = 2;
+   const float HALF_WIDTH = 2.0, HALF_HEIGHT = 2.0;
 
   for(int i = 0; i < numberOfNodes; i++)
   {

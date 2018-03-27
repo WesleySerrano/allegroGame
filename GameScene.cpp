@@ -1,4 +1,6 @@
 #include "GameScene.h"
+#define REAL double
+#include "triangle.h"
 
 void tickCallback(btDynamicsWorld *world, btScalar timeStep)
 {
@@ -6,6 +8,15 @@ void tickCallback(btDynamicsWorld *world, btScalar timeStep)
     if(numManifolds)
     {
     }
+}
+
+void printTriangleIO(triangulateio data)
+{
+  std::cout << "Number of points: " << data.numberofpoints << std::endl;
+  std::cout << "Number of holes: " << data.numberofholes << std::endl;
+  std::cout << "Number of segments: " << data.numberofsegments << std::endl;
+  std::cout << "Number of regions: " << data.numberofregions << std::endl;
+  std::cout << "Number of points attributes: " << data.numberofpointattributes << std::endl;
 }
 
 void GameScene::addObjectToTriangulation(btVector3 position, btVector3* corners)
@@ -56,6 +67,7 @@ void GameScene::loop()
     if(refresh && al_is_event_queue_empty(Allegro::eventQueue))
     {
       refresh = false;
+      this->triangulateObjects();
       this->render();
 
       al_flip_display();
@@ -88,7 +100,7 @@ void GameScene::createGameObjects()
     const float DISTANCE_CONSTRAINT = 4;
     const float OFFSET = 8;
 
-    this->sb = new SoftBody(NUM_CHAIN_NODES,startX,startY,OFFSET,DISTANCE_CONSTRAINT, 1, this->dynamicsWorld, false);
+    //this->sb = new SoftBody(NUM_CHAIN_NODES,startX,startY,OFFSET,DISTANCE_CONSTRAINT, 1, this->dynamicsWorld, false);
 
     GameObject *ground = new GameObject(400, 4, 400, 10, 0);
     ground->setActiveStatus(true);
@@ -129,12 +141,139 @@ void GameScene::setGravity(btVector3 gravity)
 
 void GameScene::render()
 {
-  this->sb->render();
+  //this->sb->render();
   for (int j = this->getDynamicsWorld()->getNumCollisionObjects() - 1; j >= 0; --j)
   {
     GameObject *obj = (GameObject*)this->getDynamicsWorld()->getCollisionObjectArray()[j];
     if(obj->isVisible())obj->render();
   } 
+}
+
+void GameScene::triangulateObjects()
+{
+  char* triswitches;
+  struct triangulateio in, out, vorout;
+  const long NUMBER_OF_OBJECTS = this->getDynamicsWorld()->getNumCollisionObjects();
+  long pointsCount = 0;
+  
+  in.numberofpoints = 4*(NUMBER_OF_OBJECTS + 1);
+  in.numberofpointattributes = 0;
+  in.numberofsegments = 4*(NUMBER_OF_OBJECTS + 1);
+  in.numberofholes = NUMBER_OF_OBJECTS;
+  in.numberofregions = 0;
+  in.pointlist = (REAL *) malloc(in.numberofpoints * 2 * sizeof(REAL));
+  in.segmentlist = (int *) malloc(in.numberofsegments*2*sizeof(int));
+  in.holelist = (REAL *) malloc(in.numberofholes*2*sizeof(REAL));
+  in.pointattributelist = (REAL *) malloc(in.numberofpoints *
+                                          in.numberofpointattributes *
+                                          sizeof(REAL));
+  in.pointmarkerlist = (int *) NULL;
+  
+  for (int j = NUMBER_OF_OBJECTS - 1; j >= 0; --j)
+  {
+    GameObject *obj = (GameObject*)this->getDynamicsWorld()->getCollisionObjectArray()[j];
+    
+    btVector3 objPosition = obj->getPosition();
+    const double X = objPosition.getX();
+    const double Y = objPosition.getY();
+    const double halfHeight = obj->getHalfHeight();
+    const double halfWidth = obj->getHalfWidth();
+    
+    if(in.numberofsegments > 0)
+    {
+     const long BASE_INDEX = pointsCount/2;
+     in.segmentlist[BASE_INDEX] = BASE_INDEX;
+     in.segmentlist[BASE_INDEX+1] = BASE_INDEX+1;
+     in.segmentlist[BASE_INDEX+2] = BASE_INDEX+1;
+     in.segmentlist[BASE_INDEX+3] = BASE_INDEX+2;
+     in.segmentlist[BASE_INDEX+4] = BASE_INDEX+2;
+     in.segmentlist[BASE_INDEX+5] = BASE_INDEX+3;
+     in.segmentlist[BASE_INDEX+6] = BASE_INDEX+3;
+     in.segmentlist[BASE_INDEX+7] = BASE_INDEX;
+    }
+
+    in.pointlist[pointsCount++] = X - halfWidth;
+    in.pointlist[pointsCount++] = Y - halfHeight;
+    in.pointlist[pointsCount++] = X + halfWidth;
+    in.pointlist[pointsCount++] = Y - halfHeight;
+    in.pointlist[pointsCount++] = X + halfWidth;
+    in.pointlist[pointsCount++] = Y + halfHeight;
+    in.pointlist[pointsCount++] = X - halfWidth;
+    in.pointlist[pointsCount++] = Y + halfHeight;  
+
+    if(in.numberofholes > 0)
+    {
+     in.holelist[2 * j] = X;
+     in.holelist[2 * j + 1] = Y;
+    }
+  } 
+
+  if(in.numberofsegments > 0)
+  {
+    const long BASE_INDEX = pointsCount/2;
+    in.segmentlist[BASE_INDEX] = BASE_INDEX;
+    in.segmentlist[BASE_INDEX+1] = BASE_INDEX+1;
+    in.segmentlist[BASE_INDEX+2] = BASE_INDEX+1;
+    in.segmentlist[BASE_INDEX+3] = BASE_INDEX+2;
+    in.segmentlist[BASE_INDEX+4] = BASE_INDEX+2;
+    in.segmentlist[BASE_INDEX+5] = BASE_INDEX+3;
+    in.segmentlist[BASE_INDEX+6] = BASE_INDEX+3;
+    in.segmentlist[BASE_INDEX+7] = BASE_INDEX;
+  }
+  in.pointlist[pointsCount++] = 0.0;
+  in.pointlist[pointsCount++] = 0.0;
+  in.pointlist[pointsCount++] = Allegro::WIDTH;
+  in.pointlist[pointsCount++] = 0.0;
+  in.pointlist[pointsCount++] = Allegro::WIDTH;
+  in.pointlist[pointsCount++] = Allegro::HEIGHT;
+  in.pointlist[pointsCount++] = 0.0;
+  in.pointlist[pointsCount++] = Allegro::HEIGHT;
+  
+  out.pointlist = (REAL *) NULL;
+  
+  out.pointattributelist = (REAL *) NULL;
+  out.pointmarkerlist = (int *) NULL;
+  out.trianglelist = (int *) NULL;
+  
+  out.triangleattributelist = (REAL *) NULL;
+  out.neighborlist = (int *) NULL;
+  
+  out.segmentlist = (int *) NULL;
+  
+  out.segmentmarkerlist = (int *) NULL;
+  out.edgelist = (int *) NULL;
+  out.edgemarkerlist = (int *) NULL;
+
+  vorout.pointlist = (REAL *) NULL;
+  
+  vorout.pointattributelist = (REAL *) NULL;
+  vorout.edgelist = (int *) NULL;
+  vorout.normlist = (REAL *) NULL; 
+
+  std::string switchesStr = "pBz";
+  char *switches = new char[switchesStr.length() + 1];
+  strcpy(switches,switchesStr.c_str());
+  
+  triangulate(switches, &in, &out, &vorout);  
+
+  for(int i = 0; i < out.numberoftriangles; i++)
+  {
+    const long P0 = out.trianglelist[3*i];
+    const long P1 = out.trianglelist[3*i+1];
+    const long P2 = out.trianglelist[3*i+2];
+    std::cout << P0<< " "<< P1<< " "<< P2<< " "<< out.numberofsegments<< " "<< out.numberofedges<< " "<< out.numberofpoints<<std::endl;
+    std::cout << 2*P0 - 2 << " - " << 2*P0 - 1 << std::endl;
+    std::cout << 2*P1 - 2 << " - " << 2*P1 - 1 << std::endl;
+    std::cout << 2*P2 - 2 << " - " << 2*P2 - 1 << std::endl;
+    std::cout << out.pointlist[2*out.numberofpoints-1] << std::endl;
+    std::cout << out.numberoftriangles << " " << out.numberofpoints << std::endl;
+    const double X0 = out.pointlist[2*P0-2], Y0 = out.pointlist[2*P0 - 1];
+    const double X1 = out.pointlist[2*P1-2], Y1 = out.pointlist[2*P1 - 1];
+
+    //std::cout << X0<< " "<< Y0<< " "<< X1<< " "<< Y1<< " "<< X2<< " "<< Y2<<std::endl;
+
+    al_draw_triangle(out.pointlist[2*P0 - 2], out.pointlist[2*P0 - 1], out.pointlist[2*P1 - 2], out.pointlist[2*P1 - 1], out.pointlist[2*P2 - 2], out.pointlist[2*P2 - 1], al_map_rgb(255, 255, 255),1);
+  }
 }
 
 void GameScene::update()

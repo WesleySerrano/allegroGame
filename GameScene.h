@@ -40,6 +40,7 @@ class GameScene
         void render();
         void setGravity(btVector3);
         void tick(btScalar timeStep);
+        void triangulateObjects();
         void update();
 
         btDiscreteDynamicsWorld *dynamicsWorld;
