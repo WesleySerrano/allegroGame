@@ -12,7 +12,7 @@ class Spawner
 
     void setTemplateParameters(Enemy*);
     void setTemplateSprite(float, float, float);
-    void spawn(btDiscreteDynamicsWorld*);
+    void spawn();
   private:
     Enemy** objects;
     int NUMBER_OF_OBJECTS;
@@ -28,6 +28,6 @@ class Spawner
     double templateHalfHeight;
     double templateMass;
 
-    btVector3 color;
+    b2Vec3 color;
 };
 #endif

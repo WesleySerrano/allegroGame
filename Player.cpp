@@ -7,15 +7,17 @@ Player::Player() : GameObject()
   this->halfHeight = 0;
 }
 
-Player::Player(double halfWidth, double halfHeight, double x, double y, double mass) : GameObject(halfWidth, halfHeight, x, y, mass)
+Player::Player(double halfWidth, double halfHeight, double x, double y, double mass) : GameObject(halfWidth, halfHeight, x, y, mass, b2_dynamicBody)
 {
-  this->speed = btVector3(0, 0, 0);
+  this->speed = b2Vec2(0, 0);
    /*this->halfWidth = halfWidth;
    this->halfHeight = halfHeight;
    this->mass = mass;
 
    this->color.setValue(0, 255, 0);
    this->active = false;*/
+
+   std::cout << this->getRigidBodyDefinition()->type << std::endl;
 }
 
 void Player::processEvent(ALLEGRO_EVENT& event)
@@ -35,23 +37,22 @@ void Player::processEvent(ALLEGRO_EVENT& event)
     {
        if(event.keyboard.keycode == ALLEGRO_KEY_LEFT || event.keyboard.keycode == ALLEGRO_KEY_RIGHT)
        { 
-         this->speed = btVector3(0, 0, 0);
+         this->speed.SetZero();
        }
     }
 }
 
 void Player::moveLeft()
 {
-    this->speed = btVector3(-50, 0, 0);
+    this->speed = b2Vec2(-50, 0);
 }
 
 void Player::update()
 {
-  if(this->speed.getX() != 0) this->setLinearVelocity(this->speed);
+  if(this->speed.x != 0){}
 }
 
 void Player::moveRight()  
 {
-    this->speed = btVector3(50, 0, 0);
-    this->setLinearVelocity(this->speed);
+    this->speed = b2Vec2(50, 0);
 }

@@ -4,9 +4,10 @@
 #define BIT(x) (1<<(x))
 
 #include <cstdio>
+#include <vector>
+#include <box2d/b2_world.h>
 #include "Player.h"
 #include "Spawner.h"
-#include "SoftBody.h"
 
 using namespace std; 
 
@@ -25,29 +26,23 @@ class GameScene
         */
          void loop();
         
-        /**
-        * Gets the variable describing the physics world
-        * @return The informations about the physics world
-        */
-        btDiscreteDynamicsWorld* getDynamicsWorld() {return this->dynamicsWorld;}
     private:
-        void addObjectToTriangulation(btVector3, btVector3*);
         void createGameObjects();
-        void createDynamicsWorld();
-        void initializeTetGen();
-        void outputTriangulation();
+        void createWorld();
         void processEvent(ALLEGRO_EVENT&);
         void render();
-        void setGravity(btVector3);
-        void tick(btScalar timeStep);
-        void triangulateObjects();
+        void setGravity(b2Vec2);
+        void tick(double timeStep);
         void update();
 
-        btDiscreteDynamicsWorld *dynamicsWorld;
         float TIME_STEP;
         Player *player;
         Spawner *enemySpawner;
-        SoftBody* sb;
+        b2World *world;
+        b2Vec2 gravity;
+
+        std::vector<GameObject*> objects;
+        std::vector<b2Body*> bodies;
 
         enum  collisionTypes {COLLIDES_WITH_WALL = 0, COLLIDES_WITH_OBJECTS = BIT(0)};
 };

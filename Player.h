@@ -15,7 +15,7 @@ class Player : public GameObject
         void moveLeft();
         void moveRight();
 
-        btVector3 speed;
+        b2Vec2 speed;
 };
 
 #endif

@@ -2,43 +2,51 @@
 #define GAMEOBJECT_H
 
 #include <iostream>
+#include <box2d/b2_math.h>
+#include <box2d/b2_body.h>
+#include <box2d/b2_polygon_shape.h>
+#include <box2d/b2_fixture.h>
 #include "Allegro.h"
-#include <btBulletDynamicsCommon.h>
-#include <LinearMath/btVector3.h>
-#include <LinearMath/btAlignedObjectArray.h> 
 
-class GameObject : public btRigidBody
+class GameObject
 {
   public:
     GameObject();
-    GameObject(double, double , double, double, double);
+    GameObject(double, double , double, double, double, b2BodyType);
 
     bool isActive();
     bool isVisible();
-    btVector3 getPosition();
-    btVector3* getCorners();
+    b2Vec2 getPosition();
+    b2Vec2* getCorners();
+    b2Body* getRigidBody();
+    b2BodyDef* getRigidBodyDefinition();
     double getHalfWidth();
     double getHalfHeight();
-    double getMass();    
+    double getInverseMass();    
 
     void render();
 
     void setActiveStatus(bool);
     void setPosition(int, int);
-    void setSprite(btVector3);
+    void setSprite(b2Vec3);
     void setSprite(float, float , float);
     void setVisibleStatus(bool);
+    void setRigidBody(b2Body*);
 
     void update();
   protected:
-    btRigidBody::btRigidBodyConstructionInfo createRigidBody(double, double , double, double, double);
+    b2BodyDef* createRigidBody(double, double , double, double, double, b2BodyType);
+    b2PolygonShape* createShape(double, double);
 
     double halfWidth;
     double halfHeight;
-    double mass;
-    btVector3 color;
+    double inverseMass;
+    b2Vec3 color;
     bool active;
     bool visible;
 
+    b2BodyDef *rigidBodyDefinition;
+    b2PolygonShape* shape;
+    b2Body *rigidBody;
 };
 #endif

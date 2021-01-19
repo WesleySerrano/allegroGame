@@ -1,55 +1,38 @@
 COMPILER = g++ -std=c++11
 C_COMPILER = gcc
 C_SWITCHES = -O -DLINUX -I/usr/X11R6/include -L/usr/X11R6/lib
-TRILIBDEFS = -DTRILIBRARY -DANSI_DECLARATORS
 
-ALLEGRO_PATH = /usr/local/include/allegro5
+ALLEGRO_PATH = /usr/include/x86_64allegro5
 ALLEGRO_LIBRARIES_PATHS = -I $(ALLEGRO_PATH) 
 
-BULLET_INCLUDE_PATH = /usr/local/include/bullet
-BULLET_LINK_PATH = /usr/local/lib
-BULLET_LIBRARIES_PATHS = -I$(BULLET_INCLUDE_PATH) -L$(BULLET_LINK_PATH) -Wl,-rpath=$(BULLET_LINK_PATH)
+ALLEGRO_LIBRARIES = -I/usr/include/x86_64-linux-gnu -lallegro_image -lallegro_primitives -lallegro_ttf -lallegro_font -lallegro_acodec -lallegro_audio -lallegro
+BOX2D_LIBRARIES = -lbox2d
+LIBRARIES = $(ALLEGRO_LIBRARIES) $(BOX2D_LIBRARIES)
+INCLUDES = $(ALLEGRO_LIBRARIES_PATHS)
 
-EIGEN_LIBRARIES = /usr/local/include/eigen3/
-BULLET_LIBRARIES = -lBulletDynamics -lBulletCollision -lBulletSoftBody -lLinearMath
-ALLEGRO_LIBRARIES = -lallegro -lallegro_image -lallegro_primitives -lallegro_font -lallegro_ttf -lallegro_audio -lallegro_acodec
-LIBRARIES = $(BULLET_LIBRARIES) $(ALLEGRO_LIBRARIES)
-INCLUDE_PATHS = $(BULLET_LIBRARIES_PATHS)
+main: main.cpp GameObject GameScene Spawner Player Enemy Allegro
+	$(COMPILER) main.cpp GameObject.o Spawner.o Player.o Enemy.o GameScene.o Allegro.o -o main $(LIBRARIES)
 
-main: main.cpp GameObject GameScene Spawner Player Enemy Allegro SoftBody triangle
-	$(COMPILER) $(C_SWITCHES) main.cpp GameObject.o Spawner.o Player.o Enemy.o SoftBody.o GameScene.o Allegro.o triangle.o -o main $(LIBRARIES) $(INCLUDE_PATHS) 
-
-debug: main.cpp GameObject GameScene Spawner Player Enemy Allegro SoftBody triangle
-	$(COMPILER) $(C_SWITCHES) main.cpp GameObject.o Spawner.o Player.o Enemy.o SoftBody.o GameScene.o Allegro.o triangle.o -g $(LIBRARIES) $(INCLUDE_PATHS) 
+debug: main.cpp GameObject GameScene Spawner Player Enemy Allegro
+	$(COMPILER) main.cpp GameObject.o Spawner.o Player.o Enemy.o GameScene.o Allegro.o -g -o main_debug $(LIBRARIES)
 
 Spawner: Spawner.h
-	$(COMPILER) $(LIBRARIES) $(INCLUDE_PATHS) -c Spawner.cpp
+	$(COMPILER) $(LIBRARIES)  -c Spawner.cpp
 
 Player: Player.h
-	$(COMPILER) $(LIBRARIES) $(INCLUDE_PATHS) -c Player.cpp
+	$(COMPILER) $(LIBRARIES)  -c Player.cpp
 
 Enemy: Enemy.h
-	$(COMPILER) $(LIBRARIES) $(INCLUDE_PATHS) -c Enemy.cpp
-
-SoftBody: SoftBody.h
-	$(COMPILER) $(LIBRARIES) $(INCLUDE_PATHS) -c SoftBody.cpp
+	$(COMPILER) $(LIBRARIES)  -c Enemy.cpp
 
 GameObject: GameObject.h
-	$(COMPILER) $(LIBRARIES) $(INCLUDE_PATHS) -c GameObject.cpp
+	$(COMPILER) $(LIBRARIES)  -c GameObject.cpp
 
 GameScene: GameScene.h 
-	$(COMPILER) $(LIBRARIES) $(INCLUDE_PATHS) -c GameScene.cpp 
+	$(COMPILER) $(LIBRARIES)  -c GameScene.cpp 
 
 Allegro: Allegro.h
-	$(COMPILER) $(ALLEGRO_LIBRARIES) -c Allegro.cpp
-
-trilibrary: triangle tricall
-
-triangle: triangle.h
-	$(COMPILER) $(C_SWITCHES) $(TRILIBDEFS) -c triangle.cpp 
-
-tricall: tricall.c triangle
-	$(C_COMPILER) $(C_SWITCHES) -o tricall tricall.c triangle.o -lm
+	$(COMPILER) -I/usr/include/x86_64-linux-gnu -lallegro_font -lallegro_image -lallegro_primitives -lallegro $(ALLEGRO_LIBRARIES) -c Allegro.cpp
 
 clean:
 	rm main *.o

@@ -1,40 +1,40 @@
 #include "GameObject.h"
 
-GameObject::GameObject() : btRigidBody(btScalar(0), NULL, NULL, btVector3(0,0,0))
+GameObject::GameObject()
 {
   this->halfWidth = 0;
   this->halfHeight = 0;
 }
 
-GameObject::GameObject(double halfWidth, double halfHeight, double x, double y, double mass) : btRigidBody(createRigidBody(halfWidth, halfHeight, x, y, mass))
+GameObject::GameObject(double halfWidth, double halfHeight, double x, double y, double inverseMass, b2BodyType rigidBodyType)
 {
    this->halfWidth = halfWidth;
    this->halfHeight = halfHeight;
-   this->mass = mass;
+   this->inverseMass = inverseMass;
 
-   this->color.setValue(0, 255, 0);
+   this->color.Set(0, 255, 0);
    this->active = false;
    this->visible = false;
 
-   this->setLinearFactor(btVector3(1, 1, 0));
-   this->setAngularFactor(btVector3(0, 0, 1));
+   createRigidBody(halfWidth, halfHeight, x, y, inverseMass, rigidBodyType);
+
+   createShape(halfWidth, halfHeight);
 }
 
 void GameObject::render()
 {  
-  btVector3 position = this->getPosition();
+  b2Vec2 position = this->getPosition();
 
-  const double X = position.getX(), Y = -position.getY() + Allegro::HEIGHT;
+  const double X = position.x, Y = -position.y + Allegro::HEIGHT;
 
-  al_draw_rectangle(X - this->halfWidth, Y - this->halfHeight, X + this->halfWidth, Y + this->halfHeight, al_map_rgb(this->color.getX(), this->color.getY(), this->color.getZ()), 0);
-}
+  al_draw_rectangle(X - this->halfWidth, Y - this->halfHeight, X + this->halfWidth, Y + this->halfHeight, al_map_rgb(this->color.x, this->color.y, this->color.z), 0);}
 
 void GameObject::setSprite(float r, float g, float b)
 {
-   this->color.setValue(r, g, b);
+   this->color.Set(r, g, b);
 }
 
-void GameObject::setSprite(btVector3 color)
+void GameObject::setSprite(b2Vec3 color)
 {
    this->color = color;
 }
@@ -43,71 +43,52 @@ void GameObject::update()
 {
 }
 
-btRigidBody::btRigidBodyConstructionInfo GameObject::createRigidBody(double halfWidth, double halfHeight, double x, double y, double mass)
+b2BodyDef* GameObject::createRigidBody(double halfWidth, double halfHeight, double x, double y, double inverseMass, b2BodyType rigidBodyType)
 { 
-  btBoxShape* shape = new btBoxShape(btVector3(halfWidth, halfHeight, 10));
-  
-  btTransform transform;
-  transform.setIdentity();
-  transform.setOrigin(btVector3(x, y, 0));
+  this->rigidBodyDefinition = new b2BodyDef();
+  this->rigidBodyDefinition->position.Set(x, y);
+  this->rigidBodyDefinition->type = rigidBodyType;
 
-  this->setWorldTransform(transform);
+  this->halfHeight = halfHeight;
 
-  btAssert((!shape || shape->getShapeType() != INVALID_SHAPE_PROXYTYPE));
-  bool isDynamic = (mass != 0.f);
+  this->halfWidth = halfWidth;
 
-  btVector3 localInertia(0, 0, 0);
-  if(isDynamic)
-  {
-    shape->calculateLocalInertia(mass, localInertia);
-  }
-
-  btDefaultMotionState *motionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(x, y, 0)));
-  btRigidBody::btRigidBodyConstructionInfo constructionInfo(mass, motionState, shape, localInertia);
-
-  if(!isDynamic)
-  {
-    constructionInfo.m_friction = 1.5;
-    constructionInfo.m_restitution = 1.3;
-  }
-
-   return constructionInfo;
+  return this->rigidBodyDefinition;
 }
 
-btVector3 GameObject::getPosition()
+b2PolygonShape* GameObject::createShape(double halfWidth, double halfHeight)
 {
-  btTransform trans;
-  this->getMotionState()->getWorldTransform(trans);
-  
-  return trans.getOrigin();
+  this->shape = new b2PolygonShape();
+  this->shape->SetAsBox(halfWidth, halfHeight);
+
+  return this->shape;
+}
+
+b2Vec2 GameObject::getPosition()
+{
+  return this->getRigidBody()->GetPosition();
 }
 
 void GameObject::setPosition(int x, int y)
 {
-  
-  btTransform transform;
-  transform.setIdentity();
-  transform.setOrigin(btVector3(x, y, 0));
-
-  this->setWorldTransform(transform);
 }
 
-btVector3* GameObject::getCorners()
+b2Vec2* GameObject::getCorners()
 {
-  btVector3 position = this->getPosition();
-  double X = position.getX(), Y = position.getY();
+  b2Vec2 position = this->getPosition();
+  double X = position.x, Y = position.y;
 
-  btVector3* results = new btVector3[4];
+  b2Vec2* results = new b2Vec2[4];
   //std::cout << X << ", " << Y <<  ", " << position.getZ() << ", " << halfWidth << ", " << halfHeight << std::endl;
   /*
   3 - 2
   |   |
   0 - 1
   */
-  results[0] = btVector3(X - halfWidth, Y - halfHeight,0);
-  results[1] = btVector3(X + halfWidth, Y - halfHeight,0);
-  results[2] = btVector3(X + halfWidth, Y + halfHeight,0); 
-  results[3] = btVector3(X - halfWidth, Y + halfHeight,0);
+  results[0] = b2Vec2(X - halfWidth, Y - halfHeight);
+  results[1] = b2Vec2(X + halfWidth, Y - halfHeight);
+  results[2] = b2Vec2(X + halfWidth, Y + halfHeight); 
+  results[3] = b2Vec2(X - halfWidth, Y + halfHeight);
 
   return results;
 }
@@ -142,7 +123,27 @@ double GameObject::getHalfHeight()
   return this->halfHeight;
 }
 
-double GameObject::getMass()
+double GameObject::getInverseMass()
 {
-  return this->mass;
+  return this->inverseMass;
+}
+
+b2BodyDef* GameObject::getRigidBodyDefinition()
+{
+  return this->rigidBodyDefinition;
+}
+
+b2Body* GameObject::getRigidBody()
+{
+  return this->rigidBody;
+}
+
+void GameObject::setRigidBody(b2Body* body)
+{  
+  b2FixtureDef* objectFixtureDef = new b2FixtureDef();
+  objectFixtureDef->density = this->inverseMass;
+  objectFixtureDef->shape = this->shape;
+
+  this->rigidBody = body;
+  this->rigidBody->CreateFixture(objectFixtureDef);
 }

@@ -25,15 +25,15 @@ void Spawner::setTemplateParameters(Enemy* templateObject)
 {
     this->templateHalfWidth = templateObject->getHalfWidth();
     this->templateHalfHeight = templateObject->getHalfHeight();
-    this->templateMass = templateObject->getMass();
+    this->templateMass = templateObject->getInverseMass();
 }
 
 void Spawner::setTemplateSprite(float r, float g, float b)
 {
-    this->color.setValue(r, g, b);
+    this->color.Set(r, g, b);
 }
 
-void Spawner::spawn(btDiscreteDynamicsWorld *dynamicsWorld)
+void Spawner::spawn()
 {
   double secs = (double)(time(NULL) - this->timeElapsed);
 
@@ -73,7 +73,6 @@ void Spawner::spawn(btDiscreteDynamicsWorld *dynamicsWorld)
 
         enemy->setActiveStatus(true);
         enemy->setVisibleStatus(true);
-        dynamicsWorld->addRigidBody(enemy);
     }
   }
 
