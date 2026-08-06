@@ -1,6 +1,7 @@
 #include "GameScene.h"
-#define REAL double
-#include "triangle.h"
+#include "Utils.hpp"
+//#define REAL double
+//#include "triangle.h"
 
 GameScene::GameScene()
 {
@@ -15,9 +16,9 @@ GameScene::GameScene()
 
    Allegro::initialize(Allegro::WIDTH, Allegro::HEIGHT, "AllegroApp");
 
-  this->setGravity(b2Vec2(0.0f, -9.8f));
+   this->setGravity(makeVec2(0.0f, -9.8f));
    this->createGameObjects();
-   this->createWorld();
+   //this->createWorld();
 }
 
 void GameScene::loop()
@@ -27,6 +28,7 @@ void GameScene::loop()
   ALLEGRO_EVENT event;
 
   const int POSITION_ITERATIONS = 2, VELOCITY_ITERATIONS = 6;
+  al_create_timer(this->TIME_STEP);
 
   while(42)
   {
@@ -35,7 +37,7 @@ void GameScene::loop()
 
     if(event.type == ALLEGRO_EVENT_TIMER)
     {
-      this->world->Step(this->TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
+      //b2WorldDef_Step(this->worldDefinition, this->TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
       refresh = true;
       this->update();
     }
@@ -90,24 +92,27 @@ void GameScene::createGameObjects()
 
 void GameScene::createWorld()
 {
-  this->world = new b2World(b2Vec2(this->gravity.x, this->gravity.y));
+  *this->worldDefinition = b2DefaultWorldDef();
+  this->worldDefinition->gravity = this->gravity;
+
+  *this->worldId = b2CreateWorld(this->worldDefinition);
 
   for(GameObject *object : this->objects)
   {
     if(object->isActive())
     {
-      b2Body* objectRigidBody = this->world->CreateBody(object->getRigidBodyDefinition());
+      b2BodyId objectRigidBodyId = b2CreateBody(*this->worldId, object->getRigidBodyDefinition());
 
-      object->setRigidBody(objectRigidBody);
+      object->setRigidBody(&objectRigidBodyId);
 
-      this->bodies.emplace_back(objectRigidBody);
+      this->bodies.emplace_back(&objectRigidBodyId);
     }
   }
 }
 
 void GameScene::setGravity(b2Vec2 _gravity)
 {
-  this->gravity = b2Vec2(_gravity.x, _gravity.y);
+  this->gravity = makeVec2(_gravity.x, _gravity.y);
 }
 
 void GameScene::render()
@@ -132,7 +137,7 @@ void GameScene::update()
 
   for(GameObject *object : this->objects)
   {
-    double X = object->getRigidBody()->GetPosition().x, Y = object->getRigidBody()->GetPosition().y;
+    double X = object->getRigidBodyDefinition()->position.x, Y = object->getRigidBodyDefinition()->position.y;
     std::cout << "X: " << X << " Y: " << Y << std::endl;
   }
 }

@@ -1,4 +1,5 @@
 #include "GameObject.h"
+#include "Utils.hpp"
 
 GameObject::GameObject()
 {
@@ -12,7 +13,7 @@ GameObject::GameObject(double halfWidth, double halfHeight, double x, double y, 
    this->halfHeight = halfHeight;
    this->inverseMass = inverseMass;
 
-   this->color.Set(0, 255, 0);
+   this->color = Vec3(0.0f, 255.0f, 0.0f);
    this->active = false;
    this->visible = false;
 
@@ -27,14 +28,14 @@ void GameObject::render()
 
   const double X = position.x, Y = -position.y + Allegro::HEIGHT;
 
-  al_draw_rectangle(X - this->halfWidth, Y - this->halfHeight, X + this->halfWidth, Y + this->halfHeight, al_map_rgb(this->color.x, this->color.y, this->color.z), 0);}
+  al_draw_rectangle(X - this->halfWidth, Y - this->halfHeight, X + this->halfWidth, Y + this->halfHeight, al_map_rgb(this->color.getX(), this->color.getY(), this->color.getZ()), 0);}
 
-void GameObject::setSprite(float r, float g, float b)
+void GameObject::setSprite(double r, double g, double b)
 {
-   this->color.Set(r, g, b);
+   this->color = Vec3(r, g, b);
 }
 
-void GameObject::setSprite(b2Vec3 color)
+void GameObject::setSprite(Vec3 color)
 {
    this->color = color;
 }
@@ -45,8 +46,11 @@ void GameObject::update()
 
 b2BodyDef* GameObject::createRigidBody(double halfWidth, double halfHeight, double x, double y, double inverseMass, b2BodyType rigidBodyType)
 { 
+  b2Vec2 position;
+  position.x = x;
+  position.y = y;
   this->rigidBodyDefinition = new b2BodyDef();
-  this->rigidBodyDefinition->position.Set(x, y);
+  this->rigidBodyDefinition->position = position;
   this->rigidBodyDefinition->type = rigidBodyType;
 
   this->halfHeight = halfHeight;
@@ -56,17 +60,18 @@ b2BodyDef* GameObject::createRigidBody(double halfWidth, double halfHeight, doub
   return this->rigidBodyDefinition;
 }
 
-b2PolygonShape* GameObject::createShape(double halfWidth, double halfHeight)
+b2Polygon* GameObject::createShape(double halfWidth, double halfHeight)
 {
-  this->shape = new b2PolygonShape();
-  this->shape->SetAsBox(halfWidth, halfHeight);
+  b2Polygon shape = b2MakeBox(halfWidth, halfHeight);
+
+  this->shape = new b2Polygon(shape);
 
   return this->shape;
 }
 
 b2Vec2 GameObject::getPosition()
 {
-  return this->getRigidBody()->GetPosition();
+  return this->rigidBodyDefinition->position;
 }
 
 void GameObject::setPosition(int x, int y)
@@ -85,10 +90,10 @@ b2Vec2* GameObject::getCorners()
   |   |
   0 - 1
   */
-  results[0] = b2Vec2(X - halfWidth, Y - halfHeight);
-  results[1] = b2Vec2(X + halfWidth, Y - halfHeight);
-  results[2] = b2Vec2(X + halfWidth, Y + halfHeight); 
-  results[3] = b2Vec2(X - halfWidth, Y + halfHeight);
+  results[0] = makeVec2(X - halfWidth, Y - halfHeight);
+  results[1] = makeVec2(X + halfWidth, Y - halfHeight);
+  results[2] = makeVec2(X + halfWidth, Y + halfHeight); 
+  results[3] = makeVec2(X - halfWidth, Y + halfHeight);
 
   return results;
 }
@@ -133,17 +138,16 @@ b2BodyDef* GameObject::getRigidBodyDefinition()
   return this->rigidBodyDefinition;
 }
 
-b2Body* GameObject::getRigidBody()
+b2BodyId* GameObject::getRigidBody()
 {
   return this->rigidBody;
 }
 
-void GameObject::setRigidBody(b2Body* body)
+void GameObject::setRigidBody(b2BodyId* body)
 {  
-  b2FixtureDef* objectFixtureDef = new b2FixtureDef();
-  objectFixtureDef->density = this->inverseMass;
-  objectFixtureDef->shape = this->shape;
+  b2ShapeDef* objectShapeDef = new b2ShapeDef();
+  objectShapeDef->density = this->inverseMass;
+  objectShapeDef->material.friction = 0.3f;
 
   this->rigidBody = body;
-  this->rigidBody->CreateFixture(objectFixtureDef);
 }

@@ -5,7 +5,7 @@
 
 #include <cstdio>
 #include <vector>
-#include <box2d/b2_world.h>
+#include <box2d/box2d.h>
 #include "Player.h"
 #include "Spawner.h"
 
@@ -38,11 +38,12 @@ class GameScene
         float TIME_STEP;
         Player *player;
         Spawner *enemySpawner;
-        b2World *world;
+        b2WorldDef *worldDefinition;
+        b2WorldId *worldId;
         b2Vec2 gravity;
 
         std::vector<GameObject*> objects;
-        std::vector<b2Body*> bodies;
+        std::vector<b2BodyId*> bodies;
 
         enum  collisionTypes {COLLIDES_WITH_WALL = 0, COLLIDES_WITH_OBJECTS = BIT(0)};
 };

@@ -2,6 +2,7 @@
 #define SPAWNER_H
 
 #include "Enemy.h"
+#include "Vec3.hpp"
 #include <ctime>
 
 class Spawner
@@ -28,6 +29,6 @@ class Spawner
     double templateHalfHeight;
     double templateMass;
 
-    b2Vec3 color;
+    Vec3 color;
 };
 #endif

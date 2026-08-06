@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "Utils.hpp"
 
 
 Player::Player() : GameObject()
@@ -9,15 +10,13 @@ Player::Player() : GameObject()
 
 Player::Player(double halfWidth, double halfHeight, double x, double y, double mass) : GameObject(halfWidth, halfHeight, x, y, mass, b2_dynamicBody)
 {
-  this->speed = b2Vec2(0, 0);
-   /*this->halfWidth = halfWidth;
+  this->speed = makeVec2(0.0f, 0.0f);
+   this->halfWidth = halfWidth;
    this->halfHeight = halfHeight;
-   this->mass = mass;
 
-   this->color.setValue(0, 255, 0);
-   this->active = false;*/
-
-   std::cout << this->getRigidBodyDefinition()->type << std::endl;
+   this->color = Vec3(0, 255, 0);
+   this->active = false;
+   
 }
 
 void Player::processEvent(ALLEGRO_EVENT& event)
@@ -37,14 +36,14 @@ void Player::processEvent(ALLEGRO_EVENT& event)
     {
        if(event.keyboard.keycode == ALLEGRO_KEY_LEFT || event.keyboard.keycode == ALLEGRO_KEY_RIGHT)
        { 
-         this->speed.SetZero();
+         this->speed = makeVec2(0, 0);
        }
     }
 }
 
 void Player::moveLeft()
 {
-    this->speed = b2Vec2(-50, 0);
+    this->speed = makeVec2(-50, 0);
 }
 
 void Player::update()
@@ -54,5 +53,5 @@ void Player::update()
 
 void Player::moveRight()  
 {
-    this->speed = b2Vec2(50, 0);
+    this->speed = makeVec2(50, 0);
 }

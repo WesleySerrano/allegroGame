@@ -1,4 +1,5 @@
 *.o
 main
+main_debug
 *.out
 .vscode/**/*
