@@ -18,8 +18,6 @@ GameObject::GameObject(double halfWidth, double halfHeight, double x, double y, 
    this->visible = false;
 
    createRigidBody(halfWidth, halfHeight, x, y, inverseMass, rigidBodyType);
-
-   createShape(halfWidth, halfHeight);
 }
 
 void GameObject::render()
@@ -44,34 +42,36 @@ void GameObject::update()
 {
 }
 
-b2BodyDef* GameObject::createRigidBody(double halfWidth, double halfHeight, double x, double y, double inverseMass, b2BodyType rigidBodyType)
+void GameObject::createRigidBody(double halfWidth, double halfHeight, double x, double y, double inverseMass, b2BodyType rigidBodyType)
 { 
   b2Vec2 position;
   position.x = x;
   position.y = y;
-  this->rigidBodyDefinition = new b2BodyDef();
+  this->rigidBodyDefinition = new b2BodyDef(b2DefaultBodyDef());
   this->rigidBodyDefinition->position = position;
   this->rigidBodyDefinition->type = rigidBodyType;
 
   this->halfHeight = halfHeight;
 
   this->halfWidth = halfWidth;
-
-  return this->rigidBodyDefinition;
 }
 
-b2Polygon* GameObject::createShape(double halfWidth, double halfHeight)
+void GameObject::createShape(b2BodyId bodyId, double halfWidth, double halfHeight)
 {
   b2Polygon shape = b2MakeBox(halfWidth, halfHeight);
 
   this->shape = new b2Polygon(shape);
 
-  return this->shape;
+  this->shapeDef = new b2ShapeDef(b2DefaultShapeDef());
+  this->shapeDef->density = this->inverseMass;
+  this->shapeDef->material.friction = 0.3f;
+
+  b2CreatePolygonShape(bodyId, this->shapeDef, &shape);
 }
 
 b2Vec2 GameObject::getPosition()
 {
-  return this->rigidBodyDefinition->position;
+  return b2Body_GetPosition((*this->rigidBody));
 }
 
 void GameObject::setPosition(int x, int y)
@@ -84,7 +84,6 @@ b2Vec2* GameObject::getCorners()
   double X = position.x, Y = position.y;
 
   b2Vec2* results = new b2Vec2[4];
-  //std::cout << X << ", " << Y <<  ", " << position.getZ() << ", " << halfWidth << ", " << halfHeight << std::endl;
   /*
   3 - 2
   |   |
@@ -118,6 +117,16 @@ void GameObject::setVisibleStatus(bool status)
   this->visible = status;
 }
 
+std::string GameObject::getLabel()
+{
+  return this->label;
+}
+
+void GameObject::setLabel(std::string label)
+{
+  this->label = label;
+}
+
 double GameObject::getHalfWidth()
 {
   return this->halfWidth;
@@ -145,9 +154,5 @@ b2BodyId* GameObject::getRigidBody()
 
 void GameObject::setRigidBody(b2BodyId* body)
 {  
-  b2ShapeDef* objectShapeDef = new b2ShapeDef();
-  objectShapeDef->density = this->inverseMass;
-  objectShapeDef->material.friction = 0.3f;
-
   this->rigidBody = body;
 }

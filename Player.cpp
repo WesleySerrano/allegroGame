@@ -16,7 +16,7 @@ Player::Player(double halfWidth, double halfHeight, double x, double y, double m
 
    this->color = Vec3(0, 255, 0);
    this->active = false;
-   
+   this->label = "Player";
 }
 
 void Player::processEvent(ALLEGRO_EVENT& event)
@@ -46,12 +46,16 @@ void Player::moveLeft()
     this->speed = makeVec2(-50, 0);
 }
 
-void Player::update()
-{
-  if(this->speed.x != 0){}
-}
-
 void Player::moveRight()  
 {
     this->speed = makeVec2(50, 0);
+}
+
+void Player::update() {
+  GameObject::update();
+  if(this->speed.x != 0){}
+  b2Vec2 position = this->getPosition();
+  position.x += this->speed.x;
+  position.y += this->speed.y;
+  this->getRigidBodyDefinition()->position = position;
 }

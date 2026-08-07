@@ -10,7 +10,7 @@ class Player : public GameObject
         Player(double, double , double, double, double);
 
         void processEvent(ALLEGRO_EVENT&);
-        void update();
+        void update() override;
     private:
         void moveLeft();
         void moveRight();

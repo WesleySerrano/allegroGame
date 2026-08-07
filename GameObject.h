@@ -2,6 +2,7 @@
 #define GAMEOBJECT_H
 
 #include <iostream>
+#include <string>
 #include <box2d/box2d.h>
 #include <box2d/math_functions.h>
 #include <box2d/base.h>
@@ -21,9 +22,12 @@ class GameObject
     b2Vec2* getCorners();
     b2BodyId* getRigidBody();
     b2BodyDef* getRigidBodyDefinition();
+    b2ShapeDef* getShapeDefinition();
     double getHalfWidth();
     double getHalfHeight();
-    double getInverseMass();    
+    double getInverseMass();
+    std::string getLabel();    
+    void createShape(b2BodyId, double, double);
 
     void render();
 
@@ -33,11 +37,11 @@ class GameObject
     void setSprite(double, double, double);
     void setVisibleStatus(bool);
     void setRigidBody(b2BodyId*);
+    void setLabel(std::string);
 
-    void update();
+    virtual void update();
   protected:
-    b2BodyDef* createRigidBody(double, double , double, double, double, b2BodyType);
-    b2Polygon* createShape(double, double);
+    void createRigidBody(double, double , double, double, double, b2BodyType);
 
     double halfWidth;
     double halfHeight;
@@ -46,8 +50,11 @@ class GameObject
     bool active;
     bool visible;
 
+    std::string label;
+
     b2BodyDef *rigidBodyDefinition;
     b2Polygon* shape;
     b2BodyId *rigidBody;
+    b2ShapeDef *shapeDef;
 };
 #endif
